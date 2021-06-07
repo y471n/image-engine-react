@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/image-engine-react/static/css/main.8c8b27cf.chunk.css",
+    "main.js": "/image-engine-react/static/js/main.8f4d231f.chunk.js",
+    "main.js.map": "/image-engine-react/static/js/main.8f4d231f.chunk.js.map",
+    "runtime-main.js": "/image-engine-react/static/js/runtime-main.96ece40e.js",
+    "runtime-main.js.map": "/image-engine-react/static/js/runtime-main.96ece40e.js.map",
+    "static/js/2.e1b94862.chunk.js": "/image-engine-react/static/js/2.e1b94862.chunk.js",
+    "static/js/2.e1b94862.chunk.js.map": "/image-engine-react/static/js/2.e1b94862.chunk.js.map",
+    "static/js/3.ff31b876.chunk.js": "/image-engine-react/static/js/3.ff31b876.chunk.js",
+    "static/js/3.ff31b876.chunk.js.map": "/image-engine-react/static/js/3.ff31b876.chunk.js.map",
+    "index.html": "/image-engine-react/index.html",
+    "static/css/main.8c8b27cf.chunk.css.map": "/image-engine-react/static/css/main.8c8b27cf.chunk.css.map",
+    "static/js/2.e1b94862.chunk.js.LICENSE.txt": "/image-engine-react/static/js/2.e1b94862.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.96ece40e.js",
+    "static/js/2.e1b94862.chunk.js",
+    "static/css/main.8c8b27cf.chunk.css",
+    "static/js/main.8f4d231f.chunk.js"
+  ]
+}
