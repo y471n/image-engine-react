@@ -2,11 +2,16 @@ import {
   Box,
   Container,
   FormControl,
+  Grid,
   InputLabel,
   MenuItem,
+  Paper,
   Select,
   TextField,
   Typography,
+  makeStyles,
+  createStyles,
+  Theme,
 } from "@material-ui/core";
 import React from "react";
 import "./App.css";
@@ -92,6 +97,28 @@ const reducer = (state: any, action: IAction) => {
   }
 };
 
+const fileSize = async (imageSrc: string) => {
+  const fileImg = await fetch(imageSrc);
+  return fileImg.blob();
+};
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      flexGrow: 1,
+    },
+    formContainer: {
+      marginTop: "2rem",
+    },
+    paper: {
+      padding: theme.spacing(2),
+      textAlign: "center",
+      height: "4rem",
+      color: theme.palette.text.secondary,
+    },
+  })
+);
+
 function App() {
   const [state, dispatch] = React.useReducer(reducer, initialState);
   const {
@@ -105,13 +132,32 @@ function App() {
     noOptimization,
     sharpness,
     scaleToScreenWidth,
-    cropWidth,
-    cropHeight,
-    cropLeft,
-    cropTop,
-    crop,
+    // cropWidth,
+    // cropHeight,
+    // cropLeft,
+    // cropTop,
+    // crop,
     error,
   } = state;
+
+  const [imageSize, setImageSize] = React.useState(0);
+  const el = document.getElementsByTagName("img");
+
+  React.useEffect(() => {
+    const fetchImageSize = async () => {
+      console.log(el[0].currentSrc);
+
+      const imageFile = await fileSize(el[0].currentSrc);
+      if (imageFile.type.indexOf("image") !== -1) {
+        setImageSize(
+          (Number(imageFile.size) / 1024).toFixed(2) as unknown as number
+        );
+      }
+    };
+    fetchImageSize();
+  });
+
+  const classes = useStyles();
 
   const fieldDispatch = (event: any, fieldName: string) =>
     dispatch({
@@ -134,170 +180,234 @@ function App() {
         <Container>
           <Box m={3}>
             <Typography variant="h2" component="h1">
-              Getting Started with Image Engine in React
+              Image Engine Demo
             </Typography>
           </Box>
+          <Image
+            src={`/images/bike.jpg`}
+            alt="Bike"
+            directives={{
+              width: width,
+              fitMethod: fitMethod,
+              rotate: rotate,
+              autoWidthWithFallback: autoWidthWithFallback || undefined,
+              height: height,
+              compression: compression,
+              outputFormat,
+              noOptimization,
+              sharpness,
+              scaleToScreenWidth,
+              // crop,
+            }}
+          />
+          <Typography variant="inherit" component="p">
+            Image size: {imageSize} KB
+          </Typography>
+        </Container>
+
+        <Container className={classes.formContainer}>
           <Box>
             <form className="" noValidate autoComplete="off">
-              <TextField
-                id="standard-basic"
-                label="Width"
-                value={width}
-                onChange={(event) => fieldDispatch(event, "width")}
-              />
-              <TextField
-                id="standard-basic"
-                label="Height"
-                value={height}
-                onChange={(event) => fieldDispatch(event, "height")}
-              />
-              <TextField
-                id="standard-basic"
-                label="AutoWidth with Fallback"
-                value={autoWidthWithFallback}
-                onChange={(event) =>
-                  fieldDispatch(event, "autoWidthWithFallback")
-                }
-              />
-              <TextField
-                error={error?.rotate}
-                label="Rotate"
-                value={rotate}
-                id="standard-number"
-                type="number"
-                onChange={(event) =>
-                  dispatch({
-                    type: "SET_ROTATE",
-                    fieldName: "rotate",
-                    payload: event.target.value,
-                  })
-                }
-                helperText="(-360) - (+360)"
-              />
-              <TextField
-                error={error?.compression}
-                label="Compression"
-                value={compression}
-                id="standard-number"
-                type="number"
-                onChange={(event) =>
-                  dispatch({
-                    type: "SET_COMPRESSION",
-                    fieldName: "compression",
-                    payload: event.target.value,
-                  })
-                }
-                helperText="0 - 100"
-              />
-              <TextField
-                error={error?.sharpness}
-                label="Sharpness"
-                value={sharpness}
-                id="standard-number"
-                type="number"
-                onChange={(event) =>
-                  dispatch({
-                    type: "SET_SHARPNESS",
-                    fieldName: "sharpness",
-                    payload: event.target.value,
-                  })
-                }
-                helperText="0 - 100"
-              />
-              <TextField
-                error={error?.scaleToScreenWidth}
-                label="Scale to Screen Width"
-                value={scaleToScreenWidth}
-                id="standard-number"
-                type="number"
-                onChange={(event) =>
-                  dispatch({
-                    type: "SET_ScaleToScreenWidth",
-                    fieldName: "scaleToScreenWidth",
-                    payload: event.target.value,
-                  })
-                }
-                helperText="0 - 100"
-              />
-              <FormControl>
-                <InputLabel id="">Output Format</InputLabel>
-                <Select
-                  value={outputFormat}
-                  onChange={(event) => fieldDispatch(event, "outputFormat")}
-                  displayEmpty
-                  label="Format"
-                >
-                  <MenuItem value="png">
-                    <em>Png</em>
-                  </MenuItem>
-                  <MenuItem value="gif">
-                    <em>Gif</em>
-                  </MenuItem>
-                  <MenuItem value="jpg">
-                    <em>Jpg</em>
-                  </MenuItem>
-                  <MenuItem value="bmp">
-                    <em>Bmp</em>
-                  </MenuItem>
-                  <MenuItem value="webp">
-                    <em>Webp</em>
-                  </MenuItem>
-                  <MenuItem value="jp2">
-                    <em>Jp2</em>
-                  </MenuItem>
-                  <MenuItem value="svg">
-                    <em>Svg</em>
-                  </MenuItem>
-                  <MenuItem value="mp4">
-                    <em>mp4</em>
-                  </MenuItem>
-                  <MenuItem value="jxr">
-                    <em>Jxr</em>
-                  </MenuItem>
-                </Select>
-              </FormControl>
-              <FormControl>
-                <InputLabel id="">No Optimization</InputLabel>
-                <Select
-                  value={noOptimization}
-                  onChange={(event) =>
-                    dispatch({
-                      type: "SET_NO_OPTIMIZATION",
-                      fieldName: "noOptimization",
-                      payload: event.target.value as string,
-                    })
-                  }
-                  displayEmpty
-                  label="No Optimization"
-                >
-                  <MenuItem value="false">
-                    <em>False</em>
-                  </MenuItem>
-                  <MenuItem value="true">
-                    <em>True</em>
-                  </MenuItem>
-                </Select>
-              </FormControl>
-              <Select
-                value={fitMethod}
-                onChange={(event) => fieldDispatch(event, "fitMethod")}
-                displayEmpty
-              >
-                <MenuItem value="stretch">
-                  <em>Stretch</em>
-                </MenuItem>
-                <MenuItem value="box">
-                  <em>Box</em>
-                </MenuItem>
-                <MenuItem value="letterbox">
-                  <em>Letterbox</em>
-                </MenuItem>
-                <MenuItem value="cropbox">
-                  <em>Cropbox</em>
-                </MenuItem>
-              </Select>
+              <Grid container spacing={3}>
+                <Grid item xs={3}>
+                  <Paper className={classes.paper}>
+                    <TextField
+                      id="standard-basic"
+                      label="Width"
+                      value={width}
+                      onChange={(event) => fieldDispatch(event, "width")}
+                    />
+                  </Paper>
+                </Grid>
+                <Grid item xs={3}>
+                  <Paper className={classes.paper}>
+                    <TextField
+                      id="standard-basic"
+                      label="Height"
+                      value={height}
+                      onChange={(event) => fieldDispatch(event, "height")}
+                    />
+                  </Paper>
+                </Grid>
+                <Grid item xs={3}>
+                  <Paper className={classes.paper}>
+                    <TextField
+                      id="standard-basic"
+                      label="AutoWidth with Fallback"
+                      value={autoWidthWithFallback}
+                      onChange={(event) =>
+                        fieldDispatch(event, "autoWidthWithFallback")
+                      }
+                    />
+                  </Paper>
+                </Grid>
+                <Grid item xs={3}>
+                  <Paper className={classes.paper}>
+                    <TextField
+                      error={error?.rotate}
+                      label="Rotate"
+                      value={rotate}
+                      id="standard-number"
+                      type="number"
+                      onChange={(event) =>
+                        dispatch({
+                          type: "SET_ROTATE",
+                          fieldName: "rotate",
+                          payload: event.target.value,
+                        })
+                      }
+                      helperText="(-360) - (+360)"
+                    />
+                  </Paper>
+                </Grid>
+                <Grid item xs={3}>
+                  <Paper className={classes.paper}>
+                    <TextField
+                      error={error?.compression}
+                      label="Compression"
+                      value={compression}
+                      id="standard-number"
+                      type="number"
+                      onChange={(event) =>
+                        dispatch({
+                          type: "SET_COMPRESSION",
+                          fieldName: "compression",
+                          payload: event.target.value,
+                        })
+                      }
+                      helperText="0 - 100"
+                    />
+                  </Paper>
+                </Grid>
+                <Grid item xs={3}>
+                  <Paper className={classes.paper}>
+                    <TextField
+                      error={error?.sharpness}
+                      label="Sharpness"
+                      value={sharpness}
+                      id="standard-number"
+                      type="number"
+                      onChange={(event) =>
+                        dispatch({
+                          type: "SET_SHARPNESS",
+                          fieldName: "sharpness",
+                          payload: event.target.value,
+                        })
+                      }
+                      helperText="0 - 100"
+                    />
+                  </Paper>
+                </Grid>
+                <Grid item xs={3}>
+                  <Paper className={classes.paper}>
+                    <TextField
+                      error={error?.scaleToScreenWidth}
+                      label="Scale to Screen Width"
+                      value={scaleToScreenWidth}
+                      id="standard-number"
+                      type="number"
+                      onChange={(event) =>
+                        dispatch({
+                          type: "SET_ScaleToScreenWidth",
+                          fieldName: "scaleToScreenWidth",
+                          payload: event.target.value,
+                        })
+                      }
+                      helperText="0 - 100"
+                    />
+                  </Paper>
+                </Grid>
+                <Grid item xs={3}>
+                  <Paper className={classes.paper}>
+                    <FormControl>
+                      <InputLabel id="">Output Format</InputLabel>
+                      <Select
+                        value={outputFormat}
+                        onChange={(event) =>
+                          fieldDispatch(event, "outputFormat")
+                        }
+                        displayEmpty
+                        label="Format"
+                      >
+                        <MenuItem value="png">
+                          <em>Png</em>
+                        </MenuItem>
+                        <MenuItem value="gif">
+                          <em>Gif</em>
+                        </MenuItem>
+                        <MenuItem value="jpg">
+                          <em>Jpg</em>
+                        </MenuItem>
+                        <MenuItem value="bmp">
+                          <em>Bmp</em>
+                        </MenuItem>
+                        <MenuItem value="webp">
+                          <em>Webp</em>
+                        </MenuItem>
+                        <MenuItem value="jp2">
+                          <em>Jp2</em>
+                        </MenuItem>
+                        <MenuItem value="svg">
+                          <em>Svg</em>
+                        </MenuItem>
+                        <MenuItem value="jxr">
+                          <em>Jxr</em>
+                        </MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Paper>
+                </Grid>
+                <Grid item xs={3}>
+                  <Paper className={classes.paper}>
+                    <FormControl>
+                      <InputLabel id="">No Optimization</InputLabel>
+                      <Select
+                        value={noOptimization}
+                        onChange={(event) =>
+                          dispatch({
+                            type: "SET_NO_OPTIMIZATION",
+                            fieldName: "noOptimization",
+                            payload: event.target.value as string,
+                          })
+                        }
+                        displayEmpty
+                        label="No Optimization"
+                      >
+                        <MenuItem value="false">
+                          <em>False</em>
+                        </MenuItem>
+                        <MenuItem value="true">
+                          <em>True</em>
+                        </MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Paper>
+                </Grid>
 
-              {/* <TextField
+                <Grid item xs={3}>
+                  <Paper className={classes.paper}>
+                    <Select
+                      value={fitMethod}
+                      onChange={(event) => fieldDispatch(event, "fitMethod")}
+                      displayEmpty
+                    >
+                      <MenuItem value="stretch">
+                        <em>Stretch</em>
+                      </MenuItem>
+                      <MenuItem value="box">
+                        <em>Box</em>
+                      </MenuItem>
+                      <MenuItem value="letterbox">
+                        <em>Letterbox</em>
+                      </MenuItem>
+                      <MenuItem value="cropbox">
+                        <em>Cropbox</em>
+                      </MenuItem>
+                    </Select>
+                  </Paper>
+                </Grid>
+
+                {/* <TextField
                 id="standard-basic"
                 label="Crop width"
                 value={cropWidth}
@@ -321,26 +431,9 @@ function App() {
                 value={cropTop}
                 onChange={(event) => fieldDispatch(event, "cropTop")}
               /> */}
+              </Grid>
             </form>
           </Box>
-
-          <Image
-            src={`/images/bike.jpg`}
-            alt="Bike"
-            directives={{
-              width: width,
-              fitMethod: fitMethod,
-              rotate: rotate,
-              autoWidthWithFallback: autoWidthWithFallback || undefined,
-              height: height,
-              compression: compression,
-              outputFormat,
-              noOptimization,
-              sharpness,
-              scaleToScreenWidth,
-              // crop,
-            }}
-          />
         </Container>
       </div>
     </ImageEngineProvider>
